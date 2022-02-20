@@ -16,7 +16,7 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
     const {username, password, email, gender} = req.body;
     const valid = validateSignup({username, password, email, gender});
 
-    if(Array.isArray(valid)) return res.status(422).send(valid);
+    if (Array.isArray(valid)) return res.status(422).send(valid);
 
     try {
         const user = await findUserByUsername(username);
@@ -34,18 +34,18 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 });
 
 router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res) => {
-   const {username, password} = req.body;
+    const {username, password} = req.body;
 
     const valid = validateLogin({username, password});
 
-    if(Array.isArray(valid)) return res.status(422).send(valid);
+    if (Array.isArray(valid)) return res.status(422).send(valid);
 
     try {
         const user = await findUserByUsername(username);
 
-        if(!user) return res.status(404).send({error: {message: 'User Not Found'}});
+        if (!user) return res.status(404).send({error: {message: 'User Not Found'}});
 
-        if(user.password !== hash(password)) return res.status(403).send({error: {message: 'Wrong username or password'}});
+        if (user.password !== hash(password)) return res.status(403).send({error: {message: 'Wrong username or password'}});
 
         const sessionId = await createSession(user._id);
 
@@ -62,7 +62,7 @@ router.get('/logout', auth(), async (req, res) => {
 
         res.clearCookie("sessionId").redirect("/");
     } catch (err) {
-        res.status(404).send(err);
+        res.status(404).send({error: {message: 'Session not found'}}).redirect("/");
     }
 
 })
