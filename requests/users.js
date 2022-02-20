@@ -27,7 +27,7 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 
         const sessionId = await createSession(newUser.id);
 
-        res.cookie("sessionId", sessionId, {httpOnly: true}).redirect("/dashboard");
+        res.cookie("sessionId", sessionId, {httpOnly: true}).redirect("/");
     } catch (err) {
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
@@ -49,7 +49,7 @@ router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res)
 
         const sessionId = await createSession(user._id);
 
-        res.cookie("sessionId", sessionId, {httpOnly: true}).redirect("/dashboard");
+        res.cookie("sessionId", sessionId, {httpOnly: true}).redirect("/");
     } catch (err) {
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
@@ -60,9 +60,9 @@ router.get('/logout', auth(), async (req, res) => {
     try {
         await deleteSession(req.sessionId);
 
-        res.clearCookie("sessionId").redirect("/");
+        res.clearCookie("sessionId").redirect("/login");
     } catch (err) {
-        res.status(404).send({error: {message: 'Session not found'}}).redirect("/");
+        res.status(404).send({error: {message: 'Session not found'}}).redirect("/login");
     }
 
 })

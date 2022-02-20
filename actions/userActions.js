@@ -10,7 +10,7 @@ const hash = (password) => {
 
 const auth = () => async (req, res, next) => {
 
-    if (!req.cookies["sessionId"]) return res.status(401).redirect('/');
+    if (!req.cookies["sessionId"]) return res.status(401).redirect('/login');
 
     const sessionId = req.cookies["sessionId"];
 
