@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { MoleculerError } = require("moleculer").Errors;
 const {chat, ObjectId} = require('../DB');
 
 const {findUserByUsername, createUser, createSession, hash, auth, deleteSession} = require("../actions/userActions");
@@ -39,16 +38,13 @@ router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res)
 
     try {
         const user = await findUserByUsername(username);
-        let error;
 
         if (!user) {
-            error = new MoleculerError("User not found", 404, "User not found", {});
-            return res.send(error);
+            return res.send({status: 404, error: 'User not found'});
         }
 
         if (user.password !== hash(password)) {
-            error = new MoleculerError("Wrong username or password", 403, "Wrong username or password", {});
-            return res.send(error);
+            return res.send({status: 403, error: 'Wrong username or password'});
         }
 
         const sessionId = await createSession(user._id);
