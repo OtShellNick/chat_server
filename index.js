@@ -10,13 +10,32 @@ broker.createService({
     mixins: [ApiService],
     settings:{
         cors: {
-            origin: ["http://localhost:3000"], //Moleculer-io only pick up this option and set it to io.origins()
-            methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE"],
+            origin: '*',
+            methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: [],
             exposedHeaders: [],
             credentials: false,
             maxAge: 3600
-        }
+        },
+        routes: [
+            {
+                path: '/api',
+
+                aliases: {
+                    'POST /users/login': 'user.login'
+                },
+
+                cors: {
+                    origin: ['http://localhost:3000'],
+                    methods: ['GET', 'OPTIONS', 'POST'],
+                    credentials: true
+                },
+
+                mappingPolicy: 'restrict',
+
+                authorization: true
+            }
+        ]
     }
 });
 
