@@ -33,7 +33,7 @@ broker.createService({
             },
             // Route CORS settings (overwrite global settings)
             cors: {
-                origin: ["http://localhost:3701", "https://localhost:5402"],
+                origin: ["http://localhost:3701", "https://localhost:5402", "http://localhost:3000"],
                 methods: ["GET", "OPTIONS", "POST"],
                 credentials: true
             },
