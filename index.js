@@ -10,7 +10,9 @@ const {PORT} = process.env;
 
 Server.use(express.json());
 Server.use(cookieParser());
-Server.use(cors())
+Server.use(cors({
+    origin: '*'
+}));
 
 Server.use('/api/users', require('./requests/users'))
 
