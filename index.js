@@ -29,7 +29,7 @@ broker.createService({
         routes: [{
             path: "/api",
             aliases: {
-                'POST /user/login': 'user.login'
+                'POST /users/login': 'user.login'
             },
             // Route CORS settings (overwrite global settings)
             cors: {
