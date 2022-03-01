@@ -25,6 +25,7 @@
     "express": "^4.17.2",
     "fastest-validator": "^1.12.0",
     "moleculer": "^0.14.19",
+    "moleculer-web": "^0.10.4",
     "mongodb": "^4.3.1",
     "nanoid": "^3.3.1"
   }
