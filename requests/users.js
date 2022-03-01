@@ -1,9 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const { MoleculerError } = require("moleculer").Errors;
 const {chat, ObjectId} = require('../DB');
 
 const {findUserByUsername, createUser, createSession, hash, auth, deleteSession} = require("../actions/userActions");
-const {validateSignup, validateLogin} = require('../vaidation');
+const {validateSignup} = require('../vaidation');
 
 const router = express.Router();
 
@@ -36,16 +37,19 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res) => {
     const {username, password} = req.body;
 
-    const valid = validateLogin({username, password});
-
-    if (Array.isArray(valid)) return res.status(422).send(valid);
-
     try {
         const user = await findUserByUsername(username);
+        let error;
 
-        if (!user) return res.status(404).send({error: {message: 'User Not Found'}});
+        if (!user) {
+            error = new MoleculerError("User not found", 404, "User not found", {});
+            return res.send(error);
+        }
 
-        if (user.password !== hash(password)) return res.status(403).send({error: {message: 'Wrong username or password'}});
+        if (user.password !== hash(password)) {
+            error = new MoleculerError("Wrong username or password", 403, "Wrong username or password", {});
+            return res.send(error);
+        }
 
         const sessionId = await createSession(user._id);
 
