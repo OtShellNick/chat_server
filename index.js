@@ -8,11 +8,9 @@ const cors = require("cors");
 const Server = express();
 const {PORT} = process.env;
 
-Server.options('*', cors())
-
 Server.use(express.json());
 Server.use(cookieParser());
-Server.use(cors());
+Server.use(cors({origin: ['http://localhost:3000', 'https://mmochat.online']}));
 
 Server.use('/api/users', require('./requests/users'))
 
