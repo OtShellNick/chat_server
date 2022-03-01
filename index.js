@@ -26,16 +26,16 @@ broker.createService({
             maxAge: 3600
         },
 
-        routes: [{
-            path: "/api",
-
-            // Route CORS settings (overwrite global settings)
-            cors: {
-                origin: ["http://localhost:3701", "https://localhost:4000"],
-                methods: ["GET", "OPTIONS", "POST"],
-                credentials: true
-            },
-        }]
+        // routes: [{
+        //     path: "/api",
+        //
+        //     // Route CORS settings (overwrite global settings)
+        //     cors: {
+        //         origin: ["http://localhost:3701", "https://localhost:4000"],
+        //         methods: ["GET", "OPTIONS", "POST"],
+        //         credentials: true
+        //     },
+        // }]
     }
 });
 
