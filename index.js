@@ -14,7 +14,7 @@ Server.use(cookieParser());
 Server.use(cors());
 Server.options('*', cors());
 
-Server.get(/H+\/api/g, (req, res) => {
+Server.get(/^api.*/g, (req, res) => {
     console.log(req);
     res.sendFile(path.resolve(__dirname, '../chat-front/dist/index.html'));
 })
