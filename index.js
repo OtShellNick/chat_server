@@ -19,10 +19,10 @@ Server.use('/api/users', require('./requests/users'));
 
 Server.get('/*',async (req, res) => {
     console.log(req.url)
-    const files = (await fs.promises.readdir(`./web/build`)).map(f => `/${f}`)
+    const files = (await fs.promises.readdir(`.dist`)).map(f => `/${f}`)
     const file = !files.includes(req.url) ? '/index.html' : req.url
     console.log(file)
-    const fileStream = fs.createReadStream(path.join(__dirname, `web/build${file}`))
+    const fileStream = fs.createReadStream(path.join(__dirname, `dist${file}`))
     fileStream.pipe(res)
 })
 
