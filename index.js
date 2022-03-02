@@ -18,7 +18,8 @@ Server.use('/api/users', require('./requests/users'));
 
 Server.get('/*', (req, res) => {
     console.log(req);
-    res.sendFile(path.resolve(__dirname, `./dist${req.url}`));
+    const file = path.resolve(__dirname, `./dist${req.url}`)
+    res.sendFile(file ? file : path.resolve(__dirname, `./dist/index.html`));
 })
 
 Server.listen(PORT, err => {
