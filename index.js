@@ -21,7 +21,7 @@ Server.get('/*',async (req, res) => {
     const files = (await fs.promises.readdir(`./dist`)).map(f => `/${f}`)
     const file = !files.includes(req.url) ? '/index.html' : req.url;
     const fileStream = fs.createReadStream(path.join(__dirname, `dist${file}`))
-    return fileStream.pipe(res);
+    fileStream.pipe(res)
 })
 
 Server.listen(PORT, err => {
