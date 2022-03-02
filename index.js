@@ -5,6 +5,7 @@ const express = require('express');
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require('path');
+const fs = require('fs');
 
 const Server = express();
 const {PORT} = process.env;
@@ -18,8 +19,11 @@ Server.use('/api/users', require('./requests/users'));
 
 Server.get('/*', (req, res) => {
     console.log(req);
-    const file = path.resolve(__dirname, `./dist${req.url}`)
-    res.sendFile(file ? file : path.resolve(__dirname, `./dist/index.html`));
+    const file = path.resolve(__dirname, `./dist${req.url}`);
+    fs.readFile(file, (err, data) => {
+        if (err) return res.sendFile(path.resolve(__dirname, `./dist/index.html`));
+        res.sendFile(data.toString());
+    });
 })
 
 Server.listen(PORT, err => {
