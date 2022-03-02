@@ -13,13 +13,12 @@ Server.use(express.json());
 Server.use(cookieParser());
 Server.use(cors());
 Server.options('*', cors());
+Server.use('/api/users', require('./requests/users'))
 
-Server.get(/^api.*/g, (req, res) => {
+Server.get('/', (req, res) => {
     console.log(req);
     res.sendFile(path.resolve(__dirname, '../chat-front/dist/index.html'));
 })
-
-Server.use('/api/users', require('./requests/users'))
 
 Server.listen(PORT, err => {
     console.log(`server listening on port ${PORT}`)
