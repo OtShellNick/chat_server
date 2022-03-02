@@ -21,7 +21,7 @@ Server.get('/*', (req, res) => {
     console.log(req);
     const file = path.resolve(__dirname, `./dist${req.url}`);
     fs.readFile(file, (err, data) => {
-        if (err) return res.send(path.resolve(__dirname, `./dist/index.html`));
+        if (err) return res.sendFile(path.resolve(__dirname, `./dist/index.html`));
         res.send(data.toString());
     });
 })
