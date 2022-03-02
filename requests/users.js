@@ -39,13 +39,9 @@ router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res)
     try {
         const user = await findUserByUsername(username);
 
-        if (!user) {
-            return res.json({status: 404, error: 'User not found'});
-        }
+        if (!user) res.send({status: 404, error: 'User not found'});
 
-        if (user.password !== hash(password)) {
-            return res.json({status: 403, error: 'Wrong username or password'});
-        }
+        if (user.password !== hash(password)) res.send({status: 403, error: 'Wrong username or password'});
 
         const sessionId = await createSession(user._id);
 
