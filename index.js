@@ -17,13 +17,13 @@ Server.options('*', cors());
 
 Server.use('/api/users', require('./requests/users'));
 
-Server.get('/*', (req, res) => {
-    console.log(req);
-    const file = path.resolve(__dirname, `./dist${req.url}`);
-    fs.readFile(file, (err, data) => {
-        if (err) return res.sendFile(path.resolve(__dirname, `./dist/index.html`));
-        res.send(data.toString());
-    });
+Server.get('/*',async (req, res) => {
+    console.log(req.url)
+    const files = (await fs.promises.readdir(`./web/build`)).map(f => `/${f}`)
+    const file = !files.includes(req.url) ? '/index.html' : req.url
+    console.log(file)
+    const fileStream = fs.createReadStream(path.join(__dirname, `web/build${file}`))
+    fileStream.pipe(res)
 })
 
 Server.listen(PORT, err => {
