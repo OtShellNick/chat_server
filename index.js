@@ -17,7 +17,7 @@ Server.options('*', cors());
 Server.use('/api/users', require('./requests/users'));
 
 Server.get('/*', (req, res) => {
-    console.log(req.location);
+    console.log(req);
     res.sendFile(path.resolve(__dirname, './dist/index.html'));
 })
 
