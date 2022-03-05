@@ -41,6 +41,8 @@ const createUser = async ({ username, password, email, gender }) => {
 
 const createSession = async ({id}) => {
     await deleteSessionByTime();
+    await deleteSessionByUserId(id);
+
     const sessionId = nanoid();
     const expireAt = moment().add(3, 'days').utc(true);
     await knex("sessions").insert({ sessionId, userId: id, expireAt });
@@ -49,9 +51,13 @@ const createSession = async ({id}) => {
 
 const deleteSession = async (sessionId) => await knex("sessions").where({ sessionId }).delete();
 
+const deleteSessionByUserId = async id => {
+    await knex('sessions').where('userId', '=', id).delete();
+}
+
 const deleteSessionByTime = async () => {
     const now = moment().utc(true);
-    await knex('sessions').where('expireAt', '>', now).delete();
+    await knex('sessions').where('expireAt', '<', now).delete();
 }
 
 const findUserBySessionId = async (sessionId) => {
