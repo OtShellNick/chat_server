@@ -17,7 +17,7 @@ Server.options('*', cors());
 
 Server.use('/api/users', require('./requests/users'));
 
-Server.get('/*', auth(), async (req, res) => {
+Server.get('*', auth(), async (req, res) => {
     const files = (await fs.promises.readdir(`../chat-front/dist`)).map(f => `/${f}`);
     const file = !files.includes(req.url) ? '/index.html' : req.url;
     console.log(path.join(__dirname, `../chat-front/dist${file}`))
