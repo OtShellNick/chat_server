@@ -11,8 +11,7 @@ const hash = (password) => {
 
 const auth = () => async (req, res, next) => {
     if (/js|css|\/login/gm.test(req.url)) return next();
-    console.log(!req.cookies["sessionId"])
-    if (!req.cookies["sessionId"]) return res.status(401).redirect('/login');
+    if (req.cookies["sessionId"] === undefined) return res.status(401).redirect('/login');
 
     const sessionId = req.cookies["sessionId"];
 
