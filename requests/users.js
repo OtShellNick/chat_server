@@ -14,12 +14,12 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
     const {username, password, email, gender} = req.body;
     const valid = validateSignup({username, password, email, gender});
 
-    if (Array.isArray(valid)) return res.status(422).send(valid);
+    if (Array.isArray(valid)) return res.send({status: 422, error: valid});
 
     try {
         const user = await findUserByUsername(username);
 
-        if (user) return res.status(409).send({error: {message: 'Username is already exists'}});
+        if (user) return res.send({status: 409, error: 'Username is already exists'});
 
         const newUser = await createUser({username, password, email, gender});
 
@@ -56,7 +56,7 @@ router.get('/logout', auth(), async (req, res) => {
 
         res.clearCookie("sessionId").redirect("/login");
     } catch (err) {
-        res.status(404).send({error: {message: 'Session not found'}}).redirect("/login");
+        res.send({status: 404, error: 'Session not found'}).redirect("/login");
     }
 
 })
