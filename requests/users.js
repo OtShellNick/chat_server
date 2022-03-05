@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const {chat, ObjectId} = require('../DB');
 
 const {findUserByUsername, createUser, createSession, hash, auth, deleteSession} = require("../actions/userActions");
 const {validateSignup} = require('../vaidation');
@@ -8,7 +7,6 @@ const {validateSignup} = require('../vaidation');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    console.log(await chat.collection("users").findOneAndDelete({_id: ObjectId('61fa6306ee74df4c81449a33')}))
     res.send('Hello Chat')
 });
 
@@ -43,7 +41,7 @@ router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res)
 
         if (user.password !== hash(password)) return res.send({status: 403, error: 'Wrong username or password'});
 
-        const sessionId = await createSession(user._id);
+        const sessionId = await createSession(user);
 
         res.cookie("sessionId", sessionId, {httpOnly: true}).redirect("/");
     } catch (err) {

@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('./DB').initDBConnection();
 
 const express = require('express');
 const cookieParser = require("cookie-parser");
@@ -18,9 +17,9 @@ Server.options('*', cors());
 Server.use('/api/users', require('./requests/users'));
 
 Server.get('/*',async (req, res) => {
-    const files = (await fs.promises.readdir(`./dist`)).map(f => `/${f}`)
+    const files = (await fs.promises.readdir(`../chat-front/dist`)).map(f => `/${f}`)
     const file = !files.includes(req.url) ? '/index.html' : req.url;
-    const fileStream = fs.createReadStream(path.join(__dirname, `dist${file}`))
+    const fileStream = fs.createReadStream(path.join(__dirname, `../chat-front/dist${file}`))
     fileStream.pipe(res)
 })
 

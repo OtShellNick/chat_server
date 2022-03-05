@@ -1,6 +1,7 @@
 const { nanoid } = require("nanoid");
+const moment = require("moment");
 const crypto = require("crypto");
-const {chat} = require('../DB');
+const knex = require('../DB');
 
 const hash = (password) => {
     const hash = crypto.createHash("sha256");
@@ -19,7 +20,11 @@ const auth = () => async (req, res, next) => {
     next();
 };
 
-const findUserByUsername = async (username) => await chat.collection("users").findOne({ username: username });
+const findUserByUsername = async (username) => await knex("users")
+    .select()
+    .where({ username })
+    .limit(1)
+    .then((resp) => resp[0]);
 
 const createUser = async ({ username, password, email, gender }) => {
     const newUser = {
@@ -29,25 +34,38 @@ const createUser = async ({ username, password, email, gender }) => {
         gender
     };
 
-    const { insertedId } = await chat.collection("users").insertOne(newUser);
+    const [id] = await knex("users").insert(newUser).returning("id");
 
-    return { ...newUser, id: insertedId };
+    return { ...newUser, id };
 };
 
-const createSession = async (userId) => {
+const createSession = async ({id}) => {
+    await deleteSessionByTime();
     const sessionId = nanoid();
-    await chat.collection("sessions").insertOne({ sessionId, userId });
+    const expireAt = moment().add(3, 'days').utc(true);
+    await knex("sessions").insert({ sessionId, userId: id, expireAt });
     return sessionId;
 };
 
-const deleteSession = async (sessionId) => await chat.collection("sessions").deleteOne({ sessionId });
+const deleteSession = async (sessionId) => await knex("sessions").where({ sessionId }).delete();
+
+const deleteSessionByTime = async () => {
+    const now = moment().utc(true);
+    await knex('sessions').where('expireAt', '>', now).delete();
+}
 
 const findUserBySessionId = async (sessionId) => {
-    const session = await chat.collection("sessions").findOne({ sessionId });
+    const [session] = await knex("sessions").select().where({ sessionId }).limit(1);
 
     if (!session) return;
-    return await chat.collection("users").findOne({ _id: session.userId });
+    return await knex("users")
+        .select()
+        .where({ id: session.userId })
+        .limit(1)
+        .then((resp) => resp[0]);
 };
+
+
 
 module.exports = {
     hash,
