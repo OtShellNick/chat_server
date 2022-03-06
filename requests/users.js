@@ -33,7 +33,7 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 
 router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res) => {
     const {username, password} = req.body;
-
+console.log(req.body)
     try {
         const user = await findUserByUsername(username);
 
