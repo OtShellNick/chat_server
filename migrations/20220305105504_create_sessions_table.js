@@ -7,7 +7,7 @@ exports.up = function (knex) {
         table.increments("id");
         table.integer("userId").notNullable();
         table.foreign("userId").references("users.id");
-        table.string("sessionId", 255).notNullable().unique();
+        table.string("chat_session_id", 255).notNullable().unique();
         table.timestamp('expireAt').notNullable()
     });
 }

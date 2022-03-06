@@ -23,9 +23,9 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 
         const newUser = await createUser({username, password, email, gender});
 
-        const sessionId = await createSession(newUser.id);
+        const chat_session_id = await createSession(newUser.id);
 
-        res.send({status: 200, sessionId});
+        res.send({status: 200, chat_session_id});
     } catch (err) {
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
@@ -41,9 +41,9 @@ console.log(req.body)
 
         if (user.password !== hash(password)) return res.send({status: 403, error: 'Wrong username or password'});
 
-        const sessionId = await createSession(user);
+        const chat_session_id = await createSession(user);
 
-        res.send({status: 200, sessionId});
+        res.send({status: 200, chat_session_id});
     } catch (err) {
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
@@ -52,7 +52,7 @@ console.log(req.body)
 router.get('/logout', auth(), async (req, res) => {
 
     try {
-        await deleteSession(req.sessionId);
+        await deleteSession(req.chat_session_id);
 
         res.send({status: 200});
     } catch (err) {
