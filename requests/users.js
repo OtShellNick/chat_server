@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const {findUserByUsername, createUser, createSession, hash, auth, deleteSession} = require("../actions/userActions");
+const {findUserByUsername, createUser, createSession, hash, auth, deleteSession, findUserBySessionId} = require("../actions/userActions");
 const {validateSignup} = require('../vaidation');
 
 const router = express.Router();
@@ -9,6 +9,18 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     res.send('Hello Chat')
 });
+
+router.get('/me', auth(), (async (req, res) => {
+    try {
+        const chat_session_id = req.cookies["chat_session_id"];
+
+        const {username, email, gender} = await findUserBySessionId(chat_session_id);
+
+        res.send({username, email, gender});
+    } catch {
+        res.status(500).send({error: {message: 'Internal Server Error'}});
+    }
+}))
 
 router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res) => {
     const {username, password, email, gender} = req.body;
@@ -33,7 +45,7 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 
 router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res) => {
     const {username, password} = req.body;
-console.log(req.body)
+
     try {
         const user = await findUserByUsername(username);
 
