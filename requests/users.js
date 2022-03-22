@@ -21,7 +21,7 @@ router.get('/me', auth(), (async (req, res) => {
         res.status(500).send({error: {message: 'Internal Server Error'}});
     }
 }))
-
+//TODO обработка статуса
 router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res) => {
     const {username, password, email, gender} = req.body;
     const valid = validateSignup({username, password, email, gender});
@@ -33,7 +33,7 @@ router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res
 
         if (user) return res.send({status: 409, error: 'Username is already exists'});
 
-        const newUser = await createUser({username, password, email, gender});
+        const newUser = await createUser({username, password, email, gender, status: 'online', role: 'user'});
 
         const chat_session_id = await createSession(newUser.id);
 

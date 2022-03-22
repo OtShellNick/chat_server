@@ -10,11 +10,18 @@ const hash = (password) => {
 };
 
 const auth = () => async (req, res, next) => {
-    if (!req.cookies["chat_session_id"]) return res.send({status: 401});
+    const {authorization} = req.headers;
 
-    const chat_session_id = req.cookies["chat_session_id"];
+    if (!authorization) return res.send({status: 401});
 
-    req.user = await findUserBySessionId(chat_session_id);
+    const chat_session_id = authorization;
+
+    await deleteSessionByTime();
+    const user = await findUserBySessionId(chat_session_id);
+
+    if (!user) return res.send({status: 401, error: 'Session expired'});
+
+    req.user = user;
     req.chat_session_id = chat_session_id;
     next();
 };
@@ -25,12 +32,14 @@ const findUserByUsername = async (username) => await knex("users")
     .limit(1)
     .then((resp) => resp[0]);
 
-const createUser = async ({username, password, email, gender}) => {
+const createUser = async ({username, password, email, gender, status, role}) => {
     const newUser = {
         username,
         password: hash(password),
         email,
-        gender
+        gender,
+        status,
+        role
     };
 
     const [id] = await knex("users").insert(newUser).returning("id");
@@ -45,18 +54,25 @@ const createSession = async ({id}) => {
     const chat_session_id = nanoid();
     const expireAt = moment().add(3, 'days').utc(true);
     await knex("sessions").insert({chat_session_id, userId: id, expireAt});
+    await setUserOnline(id);
     return chat_session_id;
 };
 
-const deleteSession = async (chat_session_id) => await knex("sessions").where({chat_session_id}).delete();
+const deleteSession = async (chat_session_id) => {
+    const user = await findUserBySessionId(chat_session_id);
+    await knex("sessions").where({chat_session_id}).delete();
+    await setUserOffline(user.id);
+}
 
 const deleteSessionByUserId = async id => {
     await knex('sessions').where('userId', '=', id).delete();
+    await setUserOffline(id);
 }
 
 const deleteSessionByTime = async () => {
     const now = moment().utc(true);
     await knex('sessions').where('expireAt', '<', now).delete();
+    //TODO update all deleted users to offline
 }
 
 const findUserBySessionId = async (chat_session_id) => {
@@ -69,6 +85,14 @@ const findUserBySessionId = async (chat_session_id) => {
         .limit(1)
         .then((resp) => resp[0]);
 };
+
+const setUserOffline = async (id) => {
+    await knex('users').where('id', '=', id).update({status: 'offline'});
+}
+
+const setUserOnline = async (id) => {
+    await knex('users').where('id', '=', id).update({status: 'online'});
+}
 
 
 module.exports = {

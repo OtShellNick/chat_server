@@ -13,7 +13,8 @@ Server.use(cors());
 Server.options('*', cors());
 
 Server.use('/api/users', require('./requests/users'));
+Server.use('/api/rooms', require('./requests/rooms'));
 
-Server.listen(PORT, err => {
+Server.listen(PORT, () => {
     console.log(`server listening on port ${PORT}`)
 })
