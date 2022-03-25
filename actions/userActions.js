@@ -71,8 +71,8 @@ const deleteSessionByUserId = async id => {
 
 const deleteSessionByTime = async () => {
     const now = moment().utc(true);
-    await knex('sessions').where('expireAt', '<', now).delete();
-    //TODO update all deleted users to offline
+    const usersIds = await knex('sessions').where('expireAt', '<', now).delete(['userId']);
+    await Promise.all(usersIds.map(user => setUserOffline(user.userId)));
 }
 
 const findUserBySessionId = async (chat_session_id) => {
