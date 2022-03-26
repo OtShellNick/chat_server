@@ -7,12 +7,13 @@ const router = express.Router();
 router.post('/create', auth(), async (req, res) => {
     const {name, description, tags} = req.body;
     const {user} = req;
-
+//TODO add validation
     try {
-        const {id} = await createRoom({name, description, userId: user.id, tags});
+        const {id} = await createRoom({name, description, usersIds: [user.id], tags});
 
         res.send({roomId: id});
     } catch (err) {
+        console.log(err);
         res.status(500).send({error: {message: 'Internal Server Error'}});
     }
 });

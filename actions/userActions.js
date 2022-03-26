@@ -32,14 +32,15 @@ const findUserByUsername = async (username) => await knex("users")
     .limit(1)
     .then((resp) => resp[0]);
 
-const createUser = async ({username, password, email, gender, status, role}) => {
+const createUser = async ({username, password, email, gender, status, role, avatar}) => {
     const newUser = {
         username,
         password: hash(password),
         email,
         gender,
         status,
-        role
+        role,
+        avatar
     };
 
     const [id] = await knex("users").insert(newUser).returning("id");
@@ -88,12 +89,15 @@ const findUserBySessionId = async (chat_session_id) => {
 
 const setUserOffline = async (id) => {
     await knex('users').where('id', '=', id).update({status: 'offline'});
-}
+};
 
 const setUserOnline = async (id) => {
     await knex('users').where('id', '=', id).update({status: 'online'});
-}
+};
 
+const updateUserById = async user => {
+    await knex('users').where('id', '=', user.id).update(user)
+}
 
 module.exports = {
     hash,
@@ -102,5 +106,6 @@ module.exports = {
     createUser,
     createSession,
     deleteSession,
-    findUserBySessionId
+    findUserBySessionId,
+    updateUserById
 }
