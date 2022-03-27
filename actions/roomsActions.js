@@ -7,10 +7,15 @@ const createRoom = async (room) => {
 }
 
 const getRooms = async () => {
-    return await knex("rooms").where({});
+    return await knex("rooms").where({status: 'open'});
+};
+
+const getCountRooms = async () => {
+    return await knex('rooms').where({status: 'open'}).count('id');
 }
 
 module.exports = {
     createRoom,
-    getRooms
+    getRooms,
+    getCountRooms
 }

@@ -96,7 +96,7 @@ const setUserOnline = async (id) => {
 };
 
 const updateUserById = async user => {
-    await knex('users').where('id', '=', user.id).update(user)
+    return await knex('users').where('id', '=', user.id).update(user, ['username', 'email', 'gender', 'status', 'role', 'avatar']);
 }
 
 module.exports = {

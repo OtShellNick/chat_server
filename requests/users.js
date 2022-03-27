@@ -20,8 +20,8 @@ router.get('/me', auth(), (async (req, res) => {
     } catch {
         res.status(500).send({error: {message: 'Internal Server Error'}});
     }
-}))
-//TODO обработка статуса
+}));
+
 router.post('/signup', bodyParser.urlencoded({extended: false}), async (req, res) => {
     const {username, password, email, gender, avatar} = req.body;
     const valid = validateSignup({username, password, email, gender, avatar});
@@ -68,7 +68,7 @@ router.get('/logout', auth(), async (req, res) => {
 
         res.send({status: 200});
     } catch (err) {
-        res.send({status: 404, error: 'Session not found'}).redirect("/login");
+        res.send({status: 401, error: 'Session expired'});
     }
 
 });
@@ -83,7 +83,9 @@ router.post('/update/self', auth(), async (req, res) => {
         const {authorization} = req.headers;
         const user = await findUserBySessionId(authorization);
 
-        await updateUserById({id: user.id, username, email, gender, avatar});
+        const [newUser] = await updateUserById({id: user.id, username, email, gender, avatar});
+
+        res.send({status: 200, newUser});
     } catch (e) {
         console.log('Error user update', e);
 
