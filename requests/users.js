@@ -1,7 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const {findUserByUsername, createUser, createSession, hash, auth, deleteSession, findUserBySessionId, updateUserById,
+const {
+    findUserByUsername, createUser, createSession, hash, auth, deleteSession, findUserBySessionId, updateUserById,
     getAllUsers
 } = require("../actions/userActions");
 const {validateSignup, validateUpdate} = require('../vaidation');
@@ -98,7 +99,12 @@ router.post('/update/self', auth(), async (req, res) => {
 router.get('/all', auth(), async (req, res) => {
 
     try {
-        const users = await getAllUsers();
+        let users = await getAllUsers();
+        users = users.map(user => {
+            delete user.password;
+
+            return user;
+        });
 
         res.send({status: 200, users});
     } catch (e) {
