@@ -1,13 +1,17 @@
 const express = require("express");
 const {auth} = require("../actions/userActions");
 const {createRoom, getRooms, getCountRooms} = require("../actions/roomsActions");
+const {validateRooms} = require("../vaidation");
 
 const router = express.Router();
 
 router.post('/create', auth(), async (req, res) => {
     const {name, description, tags} = req.body;
     const {user} = req;
-//TODO add validation
+
+    const valid  = validateRooms({name, description, tags});
+    if (Array.isArray(valid)) return res.send({status: 422, error: valid});
+
     try {
         const {id} = await createRoom({name, description, usersIds: [user.id], tags, status: 'open'});
 
@@ -21,12 +25,12 @@ router.post('/create', auth(), async (req, res) => {
 router.get('/all', auth(), async (req, res) => {
 try {
     const rooms = await getRooms();
-    const count = await getCountRooms();
+    const [count] = await getCountRooms();
 
     res.send({
         status: 200,
         rows: rooms,
-        count: Number(count)
+        count: Number(count.count)
     })
 } catch (err) {
     console.log('Error get all rooms', err);

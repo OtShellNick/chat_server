@@ -1,7 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const {findUserByUsername, createUser, createSession, hash, auth, deleteSession, findUserBySessionId, updateUserById} = require("../actions/userActions");
+const {findUserByUsername, createUser, createSession, hash, auth, deleteSession, findUserBySessionId, updateUserById,
+    getAllUsers
+} = require("../actions/userActions");
 const {validateSignup, validateUpdate} = require('../vaidation');
 
 const router = express.Router();
@@ -88,6 +90,19 @@ router.post('/update/self', auth(), async (req, res) => {
         res.send({status: 200, newUser});
     } catch (e) {
         console.log('Error user update', e);
+
+        res.status(500).send({error: {message: 'Internal Server Error'}})
+    }
+});
+
+router.get('/all', auth(), async (req, res) => {
+
+    try {
+        const users = await getAllUsers();
+
+        res.send({status: 200, users});
+    } catch (e) {
+        console.log('Error get all users', e);
 
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }

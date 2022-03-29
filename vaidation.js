@@ -15,6 +15,11 @@ const schema = {
             email: { type: "email", optional: true },
             gender: { type: "enum", values: ["male", "female"], optional: true }
         }
+    },
+    rooms: {
+        name: { type: 'string', min: 3, max: 15},
+        description: { type: 'string', max: 255, optional: true},
+        tags: { type: 'array', items: "string", optional: true}
     }
 }
 
@@ -30,7 +35,14 @@ const validateUpdate = data => {
     return check(data);
 }
 
+const validateRooms = data => {
+    const check = validator.compile(schema.rooms);
+
+    return check(data);
+}
+
 module.exports = {
     validateSignup,
-    validateUpdate
+    validateUpdate,
+    validateRooms
 }

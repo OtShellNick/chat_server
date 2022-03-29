@@ -99,6 +99,10 @@ const updateUserById = async user => {
     return await knex('users').where('id', '=', user.id).update(user, ['username', 'email', 'gender', 'status', 'role', 'avatar']);
 }
 
+const getAllUsers = async () => {
+    return await knex('users').where({});
+}
+
 module.exports = {
     hash,
     auth,
@@ -107,5 +111,6 @@ module.exports = {
     createSession,
     deleteSession,
     findUserBySessionId,
-    updateUserById
+    updateUserById,
+    getAllUsers
 }
