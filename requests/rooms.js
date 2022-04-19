@@ -41,6 +41,9 @@ router.get('/all', auth(), async (req, res) => {
 
 router.delete('/:id', auth(), async (req, res) => {
    const {id} = req.params;
+   const {user} = req;
+
+   if(user.role !== 'admin') return res.send({status: 403, error: 'You not allowed to do this'});
 //TODO продумать логику удаления комнаты
    try {
        await deleteRoom(id);
