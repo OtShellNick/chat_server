@@ -1,6 +1,6 @@
 const express = require("express");
 const {auth} = require("../actions/userActions");
-const {createRoom, getRooms, getCountRooms, deleteRoom} = require("../actions/roomsActions");
+const {createRoom, getRooms, getCountRooms, deleteRoom, getRoomById} = require("../actions/roomsActions");
 const {validateRooms} = require("../vaidation");
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.post('/create', auth(), async (req, res) => {
     if (Array.isArray(valid)) return res.send({status: 422, error: valid});
 
     try {
-        const {id} = await createRoom({name, description, usersIds: [user.id], tags, status: 'open'});
+        const {id} = await createRoom({name, description, usersIds: [user.id], tags, status: 'open', owner: user.id});
 
         res.send({status: 200, roomId: id});
     } catch (err) {
@@ -46,6 +46,9 @@ router.delete('/:id', auth(), async (req, res) => {
    if(user.role !== 'admin') return res.send({status: 403, error: 'You not allowed to do this'});
 //TODO продумать логику удаления комнаты
    try {
+       const room = await getRoomById(id);
+       if(user.role !== 'admin' || user.id !== room.owner) return res.send({status: 403, error: 'You not allowed to do this'});
+
        await deleteRoom(id);
 
        res.send({status: 200})
