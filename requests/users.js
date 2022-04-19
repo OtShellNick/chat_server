@@ -2,7 +2,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const {
-    findUserByUsername, createUser, createSession, hash, auth, deleteSession, findUserBySessionId, updateUserById,
+    findUserByUsername,
+    createUser,
+    createSession,
+    hash,
+    auth,
+    deleteSession,
+    findUserBySessionId,
+    updateUserById,
     getAllUsers
 } = require("../actions/userActions");
 const {validateSignup, validateUpdate} = require('../vaidation');

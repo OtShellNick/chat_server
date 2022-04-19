@@ -6,6 +6,10 @@ const createRoom = async (room) => {
     return id;
 }
 
+const deleteRoom = async (id) => {
+    return await knex('rooms').where({id}).del();
+}
+
 const getRooms = async () => {
     return await knex("rooms").where({status: 'open'});
 };
@@ -17,5 +21,6 @@ const getCountRooms = async () => {
 module.exports = {
     createRoom,
     getRooms,
-    getCountRooms
+    getCountRooms,
+    deleteRoom
 }
