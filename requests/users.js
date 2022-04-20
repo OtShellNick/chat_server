@@ -16,18 +16,15 @@ const {validateSignup, validateUpdate} = require('../vaidation');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-    res.send('Hello Chat')
-});
-
 router.get('/me', auth(), (async (req, res) => {
     try {
-        const chat_session_id = req.cookies["chat_session_id"];
+        const chat_session_id = req.headers.authorization;
 
         const {username, email, gender, status, role, avatar} = await findUserBySessionId(chat_session_id);
 
         res.send({username, email, gender, status, role, avatar});
-    } catch {
+    } catch(err) {
+        console.log('Error get users me', err);
         res.status(500).send({error: {message: 'Internal Server Error'}});
     }
 }));
