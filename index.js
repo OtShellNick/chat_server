@@ -13,7 +13,7 @@ const {PORT} = process.env;
 App.use(express.json());
 App.use(cookieParser());
 App.use(cors());
-App.options('*', cors());
+App.options('*', cors({origin: '*'}));
 
 App.use('/api/users', require('./requests/users'));
 App.use('/api/rooms', require('./requests/rooms'));
