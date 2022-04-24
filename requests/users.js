@@ -100,6 +100,29 @@ router.post('/update/self', auth(), async (req, res) => {
     }
 });
 
+router.post('/update', auth(), async (req, res) => {
+    const {username, email, gender, avatar} = req.body;
+    const valid = validateUpdate({username, email, gender});
+
+    if (Array.isArray(valid)) return res.send({status: 422, error: valid});
+
+    try {
+        const {authorization} = req.headers;
+        const user = await findUserBySessionId(authorization);
+
+        if(!user) return res.send({status: 404, error: 'User not found'});
+        if(user.role !== 'admin') return res.send({status: 403, error: 'You not allowed to do this'});
+
+        const [newUser] = await updateUserById({id: user.id, username, email, gender, avatar});
+
+        res.send({status: 200, newUser});
+    } catch (e) {
+        console.log('Error user update', e);
+
+        res.status(500).send({error: {message: 'Internal Server Error'}})
+    }
+});
+
 router.get('/all', auth(), async (req, res) => {
 
     try {
@@ -116,6 +139,6 @@ router.get('/all', auth(), async (req, res) => {
 
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
-})
+});
 
 module.exports = router;
