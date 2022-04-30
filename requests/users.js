@@ -10,7 +10,8 @@ const {
     deleteSession,
     findUserBySessionId,
     updateUserById,
-    getAllUsers
+    getAllUsers,
+    getUsersCount
 } = require("../actions/userActions");
 const {validateSignup, validateUpdate} = require('../vaidation');
 
@@ -23,7 +24,7 @@ router.get('/me', auth(), (async (req, res) => {
         const {username, email, gender, status, role, avatar} = await findUserBySessionId(chat_session_id);
 
         res.send({username, email, gender, status, role, avatar});
-    } catch(err) {
+    } catch (err) {
         console.log('Error get users me', err);
         res.status(500).send({error: {message: 'Internal Server Error'}});
     }
@@ -64,6 +65,8 @@ router.post('/login', bodyParser.urlencoded({extended: false}), async (req, res)
 
         res.send({status: 200, chat_session_id});
     } catch (err) {
+        console.log('Error login', err);
+
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
 });
@@ -110,8 +113,8 @@ router.post('/update', auth(), async (req, res) => {
         const {authorization} = req.headers;
         const user = await findUserBySessionId(authorization);
 
-        if(!user) return res.send({status: 404, error: 'User not found'});
-        if(user.role !== 'admin') return res.send({status: 403, error: 'You not allowed to do this'});
+        if (!user) return res.send({status: 404, error: 'User not found'});
+        if (user.role !== 'admin') return res.send({status: 403, error: 'You not allowed to do this'});
 
         const [newUser] = await updateUserById({id: user.id, username, email, gender, avatar});
 
@@ -140,5 +143,30 @@ router.get('/all', auth(), async (req, res) => {
         res.status(500).send({error: {message: 'Internal Server Error'}})
     }
 });
+
+router.get('/all/crm', auth(), async (req, res) => {
+    const {query} = req;
+
+    try {
+        let users = await getAllUsers(query);
+        let [count] = await getUsersCount();
+        users = users.map(user => {
+            delete user.password;
+
+            return user;
+        });
+
+        res.send({
+            status: 200, users: {
+                rows: users,
+                count: Number(count.count)
+            }
+        });
+    } catch (e) {
+        console.log('Error get all users crm', e);
+
+        res.status(500).send({error: {message: 'Internal Server Error'}})
+    }
+})
 
 module.exports = router;

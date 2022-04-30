@@ -23,10 +23,24 @@ const getCountRooms = async () => {
     return await knex('rooms').where({status: 'open'}).count('id');
 }
 
+const updateRoomUsersIds = async (roomId, socketUser) => {
+    const room = await getRoomById(roomId);
+    const newRoom = {...room, usersIds: Array.from(new Set([...room.usersIds, socketUser.id]))};
+    return await knex('rooms').where('id', '=', roomId).update(newRoom, ['id', 'name', 'description', 'tags', 'usersIds', 'status', 'owner'])
+}
+
+const deleteUserFromRoom = async (roomId, socketUser) => {
+    const room = await getRoomById(roomId);
+    const newRoom = {...room, usersIds: room.usersIds.filter(u => u !== socketUser.id)};
+    return await knex('rooms').where('id', '=', roomId).update(newRoom, ['id', 'name', 'description', 'tags', 'usersIds', 'status', 'owner'])
+}
+
 module.exports = {
     createRoom,
     getRooms,
     getCountRooms,
     deleteRoom,
-    getRoomById
+    getRoomById,
+    updateRoomUsersIds,
+    deleteUserFromRoom
 }

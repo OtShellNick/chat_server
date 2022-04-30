@@ -99,8 +99,13 @@ const updateUserById = async user => {
     return await knex('users').where('id', '=', user.id).update(user, ['username', 'email', 'gender', 'status', 'role', 'avatar']);
 }
 
-const getAllUsers = async () => {
-    return await knex('users').where({});
+const getAllUsers = async (query = {select: '*', limit: 20, offset: 0}) => {
+    const {select, limit, offset} = query;
+    return await knex.select(select).from('users').limit(Number(limit)).offset(Number(offset));
+}
+
+const getUsersCount = async () => {
+    return await knex('users').where({}).count('id');
 }
 
 module.exports = {
@@ -112,5 +117,6 @@ module.exports = {
     deleteSession,
     findUserBySessionId,
     updateUserById,
-    getAllUsers
+    getAllUsers,
+    getUsersCount
 }
